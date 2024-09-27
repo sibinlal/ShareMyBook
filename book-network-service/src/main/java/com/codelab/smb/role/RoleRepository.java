@@ -1,4 +1,4 @@
-package com.codelab.book_network_service.role;
+package com.codelab.smb.role;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

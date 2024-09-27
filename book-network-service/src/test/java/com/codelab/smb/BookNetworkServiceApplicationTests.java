@@ -1,4 +1,4 @@
-package com.codelab.book_network_service;
+package com.codelab.smb;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

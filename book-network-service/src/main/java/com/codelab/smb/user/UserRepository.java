@@ -1,4 +1,4 @@
-package com.codelab.book_network_service.user;
+package com.codelab.smb.user;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

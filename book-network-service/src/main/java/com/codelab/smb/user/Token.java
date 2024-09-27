@@ -1,8 +1,7 @@
-package com.codelab.book_network_service.user;
+package com.codelab.smb.user;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.validator.constraints.Normalized;
 
 import java.time.LocalDateTime;
 

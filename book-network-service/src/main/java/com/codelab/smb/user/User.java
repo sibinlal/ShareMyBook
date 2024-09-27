@@ -1,6 +1,6 @@
-package com.codelab.book_network_service.user;
+package com.codelab.smb.user;
 
-import com.codelab.book_network_service.role.Role;
+import com.codelab.smb.role.Role;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -100,7 +100,7 @@ public class User implements UserDetails, Principal {
         return enabled;
     }
 
-    private String getFullName() {
+    public String getFullName() {
         return firstName + lastName;
     }
 }
