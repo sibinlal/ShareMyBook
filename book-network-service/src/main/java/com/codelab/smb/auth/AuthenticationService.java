@@ -3,6 +3,7 @@ package com.codelab.smb.auth;
 import com.codelab.smb.email.EmailService;
 import com.codelab.smb.email.EmailTemplate;
 import com.codelab.smb.role.RoleRepository;
+import com.codelab.smb.security.JwtService;
 import com.codelab.smb.user.Token;
 import com.codelab.smb.user.TokenRepository;
 import com.codelab.smb.user.User;
@@ -10,11 +11,15 @@ import com.codelab.smb.user.UserRepository;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -31,7 +36,11 @@ public class AuthenticationService {
 
     private final EmailService emailService;
 
-    @Value("${application.security.mailing.frontend.activationUrl}")
+    private final AuthenticationManager authManager;
+
+    private final JwtService jwtService;
+
+    @Value("${application.mailing.frontend.activationUrl}")
     private String activationUrl;
 
     public void registerUser(RegistrationRequest regRequest) throws MessagingException {
@@ -74,6 +83,7 @@ public class AuthenticationService {
                 .token(generatedToken)
                 .createdAt(LocalDateTime.now())
                 .expiresAt(LocalDateTime.now().plusMinutes(15))
+                .user(user)
                 .build();
         tokenRepository.save(token);
 
@@ -90,5 +100,26 @@ public class AuthenticationService {
             codeBuilder.append(characters.charAt(randomIndex));
         }
         return codeBuilder.toString();
+    }
+
+    public AuthenticationResponse authenticate(AuthenticationRequest request) {
+         var auth = authManager.authenticate(
+                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+         );
+         var claims = new HashMap<String, Object>();
+         var user =  (User) auth.getPrincipal();
+         claims.put("fullName", user.getFullName());
+         var jwtToken = jwtService.generateToken(claims, user);
+         return AuthenticationResponse.builder().token(jwtToken).build();
+    }
+
+    @Transactional
+    public void activateAccount(String token) throws MessagingException {
+        Token savedToken = tokenRepository.findByToken(token)
+                .orElseThrow(() -> new RuntimeException("Invalid Token"));
+        if(LocalDateTime.now().isAfter(savedToken.getExpiresAt())){
+            sendValidationEmail(savedToken.getUser());
+            throw new RuntimeException("Token has expired. New token has sent to your email.");
+        }
     }
 }
