@@ -33,7 +33,7 @@ spring:
 application:
   security:
     jwt:
-      secret-key: codelab
+      secret-key: JxN54+K2b4xL8jkqN1J+w5RXMNlH9FX7aK1r7c0F8CQ=
       expiration: 86400000
   mailing:
     frontend:
