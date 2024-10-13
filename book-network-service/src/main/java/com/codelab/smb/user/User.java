@@ -101,6 +101,6 @@ public class User implements UserDetails, Principal {
     }
 
     public String getFullName() {
-        return firstName + lastName;
+        return firstName + " " + lastName;
     }
 }
