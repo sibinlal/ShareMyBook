@@ -1,7 +1,6 @@
 package com.codelab.smb.exception;
 
 import jakarta.mail.MessagingException;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
@@ -79,7 +78,6 @@ public class GlobalExceptionHandler {
                     var errorMessage = error.getDefaultMessage();
                     errors.add(errorMessage);
                 });
-
         return ResponseEntity
                 .status(BAD_REQUEST)
                 .body(
@@ -91,6 +89,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ExceptionResponse> handleException(Exception exp) {
+        //log exception.
         exp.printStackTrace();
         return ResponseEntity
                 .status(INTERNAL_SERVER_ERROR)
